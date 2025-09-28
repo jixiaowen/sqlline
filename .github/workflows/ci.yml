@@ -16,3 +16,18 @@ jobs:
         distribution: 'zulu'
     - name: Build with Maven
       run: ./mvnw install -Dskip.docbkx=true -DskipTests=true -Dmaven.javadoc.skip=true -Djavax.net.ssl.trustStorePassword=changeit -B -V
+    - name: List compiled files
+      run: |
+        echo "Listing JAR files in target directories:"
+        find . -name "*.jar" -type f
+        echo "Listing all files in target directories:"
+        find . -name "target" -type d -exec ls -la {} \;
+    - name: Upload compiled artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: sqlline-build
+        path: |
+          **/target/*.jar
+          !**/target/*-sources.jar
+          !**/target/*-javadoc.jar
+        if-no-files-found: warn
